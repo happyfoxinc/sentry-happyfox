@@ -4,7 +4,6 @@ import json
 import requests
 from urlparse import urljoin
 
-from sentry_plugins.base import CorePluginMixin
 from sentry.plugins.bases.issue2 import IssuePlugin2
 
 
@@ -12,7 +11,7 @@ def make_choices(options):
     return [(option['id'], option['name']) for option in options]
 
 
-class HappyFoxPlugin(CorePluginMixin, IssuePlugin2):
+class HappyFoxPlugin(IssuePlugin2):
     descripition = 'Integrate with HappyFox by converting Sentry issues to tickets'
     slug = 'happyfox'
     title = 'HappyFox'
