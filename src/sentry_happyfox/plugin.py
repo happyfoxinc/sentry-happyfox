@@ -57,6 +57,21 @@ class HappyFoxPlugin(IssuePlugin2):
                 "placeholder": "",
             },
             {
+                "name": "contact_name",
+                "label": "Contact Name",
+                "default": "Sentry",
+                "type": "text",
+                "placeholder": "Sentry",
+                "help": "Enter the name of the contact from which the tickets have to be created with in HappyFox"
+            },
+            {
+                "name": "contact_email",
+                "label": "Contact Email",
+                "type": "email",
+                "placeholder": "sentry@sentry.com",
+                "help": "Enter the email of the contact from which the tickets have to be created with in HappyFox"
+            },
+            {
                 "name": "category",
                 "label": "Category",
                 "default": default_category,
@@ -127,8 +142,8 @@ class HappyFoxPlugin(IssuePlugin2):
             "category": self.get_option('category', group.project),
             "subject": form_data.get('title'),
             "text": form_data.get('description'),
-            "email": "sentry@stagingsquad.com",
-            "name": "Sentry",
+            "email": self.get_option('contact_email', group.project),
+            "name": self.get_option('contact_name', group.project),
             "title": form_data.get('subject')
         })
         response = self._make_post_request("tickets/", json_data, group.project)
