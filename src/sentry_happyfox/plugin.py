@@ -128,7 +128,7 @@ class HappyFoxPlugin(IssuePlugin2):
             "subject": form_data.get('title'),
             "text": form_data.get('description'),
             "email": "sentry@stagingsquad.com",
-            "name": "V2 Staging Sentry",
+            "name": "Sentry",
             "title": form_data.get('subject')
         })
         response = self._make_post_request("tickets/", json_data, group.project)
