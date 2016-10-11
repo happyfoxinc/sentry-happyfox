@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: sentry-happyfox
+Version: 1.0.0
+Summary: A Sentry extension which integrates with Happyfox.
+Home-page: UNKNOWN
+Author: Aswin Murugesh
+Author-email: aswin@aswin.com
+License: BSD
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: System Administrators
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development
