@@ -1,6 +1,0 @@
-[sentry.apps]
-happyfox = sentry_happyfox
-
-[sentry.plugins]
-happyfox = sentry_happyfox.plugin:HappyFoxPlugin
-
