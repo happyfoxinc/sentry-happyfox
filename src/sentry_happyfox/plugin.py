@@ -72,6 +72,14 @@ class HappyFoxPlugin(IssuePlugin2):
                 "help": "Enter the email of the contact from which the tickets have to be created with in HappyFox"
             },
             {
+                "name": "subject_prefix",
+                "label": "Subject Prefix",
+                "type": "text",
+                "default": "[Sentry]",
+                "help": "The default prefix to be added to the new tickets created from sentry",
+                "required": False
+            },
+            {
                 "name": "category",
                 "label": "Category",
                 "default": default_category,
@@ -138,13 +146,15 @@ class HappyFoxPlugin(IssuePlugin2):
         return 10
 
     def create_issue(self, request, group, form_data, **kwargs):
+        project = group.project
         json_data = json.dumps({
-            "category": self.get_option('category', group.project),
-            "subject": form_data.get('title'),
+            "category": self.get_option('category', project),
+            "subject": "{0} {1}".format(
+                str(self.get_option('subject_prefix', project)), form_data.get('title')),
             "text": form_data.get('description'),
-            "email": self.get_option('contact_email', group.project),
-            "name": self.get_option('contact_name', group.project),
+            "email": self.get_option('contact_email', project),
+            "name": self.get_option('contact_name', project),
             "title": form_data.get('subject')
         })
-        response = self._make_post_request("tickets/", json_data, group.project)
+        response = self._make_post_request("tickets/", json_data, project)
         return response['id']
