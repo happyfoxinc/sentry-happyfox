@@ -5,7 +5,6 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 install_requires = [
-    'sentry>=8.9.0',
     'requests>=1.0.0',
     'requests-oauthlib>=0.3.0'
 ]

@@ -5,6 +5,7 @@ import requests
 from urlparse import urljoin
 
 from sentry.plugins.bases.issue2 import IssuePlugin2
+from sentry.utils.http import absolute_uri
 
 
 def make_choices(options):
@@ -30,8 +31,10 @@ class HappyFoxPlugin(IssuePlugin2):
         auth_code = self.get_option('auth_code', project)
         categories = []
         default_category = self.get_option('category', project)
+        default_staff = self.get_option('staff', project)
         if all([account_url, api_key, auth_code]):
             categories = self._get_account_categories(project)
+            staff = self._get_account_staff(project)
 
         return [
             {
@@ -72,6 +75,15 @@ class HappyFoxPlugin(IssuePlugin2):
                 "help": "Enter the email of the contact from which the tickets have to be created with in HappyFox"
             },
             {
+                "name": "private_note_staff",
+                "label": "HappyFox Staff",
+                "type": "select",
+                "default": default_staff,
+                "choices": staff,
+                "help": "Select the staff by whom the private notes are to be posted while linking tickets to sentry issue",
+                "required": False
+            },
+            {
                 "name": "subject_prefix",
                 "label": "Subject Prefix",
                 "type": "text",
@@ -101,7 +113,7 @@ class HappyFoxPlugin(IssuePlugin2):
 
     def get_issue_url(self, group, issue_id, **kwargs):
         url = self._construct_url("/staff/ticket/", group.project)
-        return "{0}{1}".format(url, issue_id) 
+        return "{0}{1}".format(url, issue_id)
 
     def _get_authentication_token(self, project):
         api_key = self.get_option('api_key', project)
@@ -110,7 +122,7 @@ class HappyFoxPlugin(IssuePlugin2):
         return token
 
     def _make_get_request(self, url, project):
-        url = self._construct_url(url, project) 
+        url = self._construct_url(url, project)
         token = self._get_authentication_token(project)
         headers = {
             "Authorization": token
@@ -135,15 +147,46 @@ class HappyFoxPlugin(IssuePlugin2):
         categories = self._make_get_request(url, project)
         return make_choices(categories)
 
+    def _get_account_staff(self, project):
+        url = 'staff/'
+        staff = self._make_get_request(url, project)
+        return make_choices(staff)
+
     def get_new_issue_fields(self, request, group, event, **kwargs):
         fields = super(HappyFoxPlugin, self).get_new_issue_fields(request, group, event, **kwargs)
         return fields
 
     def get_link_existing_issue_fields(self, request, group, event, **kwargs):
-        return []
+        return [
+            {
+                'name': 'issue_id',
+                'label': 'Ticket ID',
+                'default': '',
+                'placeholder': 'e.g. 123',
+                'type': 'number'
+            },
+            {
+                "name": "text",
+                "label": "Message",
+                "default": absolute_uri(group.get_absolute_url()),
+                "type": "textarea",
+                "help": "Enter the text that is to be posted as update in HappyFox"
+            }
+        ]
 
     def link_issue(self, request, group, form_data, **kwargs):
-        return 10
+        project = group.project
+        json_data = json.dumps({
+            'staff': self.get_option('private_note_staff', project),
+            'text': form_data.get('text')
+        })
+        print json_data
+        issue_id = form_data.get('issue_id')
+        url = 'ticket/{}/staff_pvtnote/'.format(issue_id)
+        response = self._make_post_request(url, json_data, project)
+        return {
+            'title': response.get('subject')
+        }
 
     def create_issue(self, request, group, form_data, **kwargs):
         project = group.project
