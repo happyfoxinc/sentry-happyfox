@@ -168,7 +168,7 @@ class HappyFoxPlugin(IssuePlugin2):
             {
                 "name": "text",
                 "label": "Message",
-                "default": absolute_uri(group.get_absolute_url()),
+                "default": "Related Sentry Issue: {}".format(absolute_uri(group.get_absolute_url())),
                 "type": "textarea",
                 "help": "Enter the text that is to be posted as update in HappyFox"
             }
