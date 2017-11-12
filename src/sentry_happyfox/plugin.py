@@ -32,6 +32,7 @@ class HappyFoxPlugin(IssuePlugin2):
         categories = []
         default_category = self.get_option('category', project)
         default_staff = self.get_option('staff', project)
+        staff = []
         if all([account_url, api_key, auth_code]):
             categories = self._get_account_categories(project)
             staff = self._get_account_staff(project)
